@@ -6,12 +6,11 @@ set epics=C:\epics
 set version=3.15.6
 set visual_studio_home=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build
 set perl_home=C:\Strawberry
-
 set release_files=%nfs%\release-files-win64
+set support=%epics%\support
 
 set EPICS_BASE=%epics%\base
 set EPICS_HOST_ARCH=%epics_host%
-set support=%epics%\support
 
 if not exist %epics%\   mkdir %epics%
 if not exist %support%\ mkdir %support%
@@ -69,8 +68,8 @@ call :build_module busy
 call :build_module std
 call :build_module mca
 
-call :build_module area-detector-support
-call :build_module area-detector-core
+call :build_module ADSupport
+call :build_module ADCore
 
 cd %USERPROFILE%
 call :clear_env
@@ -96,25 +95,14 @@ EXIT /B 0
 
 if not exist %epics%\support\%~1\ (
 	echo Building %~1 module ...
-	xcopy /i /Y /E %nfs%\%~1%~2 %support%\%~1
+	xcopy /i /Y /E %nfs%\%~1%~2 %support%\%~1 >nul 2>&1
 	cd %support%\%~1
-	xcopy /Y %release_files%\%~1.RELEASE configure\RELEASE
-	make
+	xcopy /Y %release_files%\%~1.RELEASE configure\RELEASE >nul 2>&1
+	if %~1 == ADCore (
+		echo HDF5_STATIC_BUILD=NO>> configure\CONFIG_SITE
+	)
+	make >nul 2>&1
 ) else (
 	echo %~1 is already installed.
 )
-EXIT /B 0
-
-:build_ad_module
-
-if not exist %ad_base%\%~1\ (
-	echo Building %~1 module ...
-	xcopy /i /Y /E %nfs%\%~1 %ad_base%\%~1
-	cd %ad_base%\%~1
-	xcopy /Y %release_files%\%~1.RELEASE configure\RELEASE
-	make
-) else (
-	echo %~1 is already installed.
-)
-
 EXIT /B 0
