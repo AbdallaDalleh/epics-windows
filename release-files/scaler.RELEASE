@@ -1,0 +1,5 @@
+
+SUPPORT=C:\epics\support
+ASYN=$(SUPPORT)/asyn
+EPICS_BASE=C:\epics\base
+

@@ -1,0 +1,24 @@
+#RELEASE Location of external products
+
+SUPPORT=C:\epics\support
+
+#  IPAC is only necessary if support for Greensprings IP488 is required
+#  IPAC release V2-7 or later is required.
+IPAC=$(SUPPORT)/ipac
+
+# SEQ is required for testIPServer
+SNCSEQ=$(SUPPORT)/seq
+
+## For sCalcout support in asynOctet - applications include asynCalc.dbd
+CALC=$(SUPPORT)/calc
+
+# If CALC was built with SSCAN support then SSCAN must be defined for testEpicsApp
+SSCAN=$(SUPPORT)/sscan
+
+#  EPICS_BASE 3.14.6 or later is required
+EPICS_BASE=C:\epics\base
+
+-include $(TOP)/../RELEASE.local
+-include $(TOP)/../RELEASE.$(EPICS_HOST_ARCH).local
+-include $(TOP)/configure/RELEASE.local
+

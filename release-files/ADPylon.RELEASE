@@ -1,0 +1,9 @@
+
+ASYN = C:\epics\support\asyn
+ADCORE = C:\epics\support\areaDetector/core
+ADGENICAM = C:\epics\support\areaDetector/genicam
+EPICS_BASE = C:\epics\base
+
+WITH_PYLON = YES
+PYLON_INCLUDE = /usr/pylon/include
+PYLON_LIB = /usr/pylon/lib

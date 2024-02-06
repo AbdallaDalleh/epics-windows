@@ -1,0 +1,49 @@
+#RELEASE Location of external products
+# Run "gnumake clean uninstall install" in the application
+# top directory each time this file is changed.
+
+TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
+
+# If you don't want to install into $(TOP) then
+# define INSTALL_LOCATION_APP here
+#INSTALL_LOCATION_APP=<fullpathname>
+
+SUPPORT=C:\epics\support
+
+# Transform record
+CALC=$(SUPPORT)/calc
+# If calc was built with sscan, we must link against it
+SSCAN=$(SUPPORT)/sscan
+
+# Busy record 
+BUSY=$(SUPPORT)/busy
+
+# Scaler record
+SCALER=$(SUPPORT)/scaler
+
+# Scaler record
+STD=$(SUPPORT)/std
+
+# SISSrc uses the sequencer
+SNCSEQ=$(SUPPORT)/seq
+
+# save_restore
+AUTOSAVE=$(SUPPORT)/autosave
+
+# ASYN - for device/driver support
+ASYN=$(SUPPORT)/asyn
+
+# MCA - this module
+MCA=$(TOP)
+
+# EPICS_BASE usually appears last so other apps can override stuff:
+EPICS_BASE=C:\epics\base
+
+#Capfast users may need the following definitions
+#CAPFAST_TEMPLATES=
+#SCH2EDIF_PATH=
+
+-include $(TOP)/../RELEASE.local
+-include $(TOP)/../RELEASE.$(EPICS_HOST_ARCH).local
+-include $(TOP)/configure/RELEASE.local
+

@@ -1,11 +1,12 @@
 @echo off
 
 set epics_host=windows-x64
-set epics=C:\epics2
+set epics=C:\epics
 set version=3.15.6
 set visual_studio_home=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build
 set perl_home=C:\Strawberry
-set release_files=%~dp0\release-files-win64
+set release_files=%~dp0\release-files
+set bin_files=%~dp0\bin
 set support=%epics%\support
 set epics_url=https://epics.anl.gov/download/base/base-%version%.tar.gz
 
@@ -25,19 +26,26 @@ git --version >nul 2>&1 && (
 if exist "%perl_home%\perl\bin\perl.exe" (
 	echo found perl @ %perl_home%\perl\bin\perl.exe.
 ) else (
-	echo Strawberry Perl not found. Install it and try again.
+	echo Strawberry Perl not found.
+	exit /B %ERRORLEVEL%
 )
 
-make --version >nul 2>&1 && (
-	for /f "delims=" %%a in ('where make') do echo found make @ %%a
-) || (
+if exist "C:\make\make.exe" (
+	echo found make @ C:\make\make.exe
+) else (
 	echo Installing make ...
-	if not exist C:\make (
-		mkdir C:\make
-	)
+	if not exist "C:\make" mkdir C:\make
 
-	xcopy /i /Y /E %~dp0\bin\make.exe C:\make
-	xcopy /i /Y /E %~dp0\bin\re2c.exe C:\make
+	xcopy /i /Y /E %bin_files%\make.exe C:\make >nul 2>&1
+)
+
+if exist "C:\make\re2c.exe" (
+	echo found re2c @ C:\make\re2c.exe
+) else (
+	echo Installing re2c ...
+	if not exist "C:\make" mkdir C:\make
+
+	xcopy /i /Y /E %bin_files%\re2c.exe C:\make >nul 2>&1
 )
 
 set _path=%PATH%
@@ -46,24 +54,40 @@ set "PATH=%PATH%;%perl_home%\c\bin"
 set "PATH=%PATH%;%perl_home%\perl\site\bin"
 set "PATH=%PATH%;%perl_home%\perl\bin"
 
-call "%visual_studio_home%\vcvarsall.bat" x64
-
-exit /B 0
+if exist "%visual_studio_home%\vcvarsall.bat" (
+	call "%visual_studio_home%\vcvarsall.bat" x64
+) else (
+	echo "Visual studio is not be installed. Exiting."
+	exit /B 1
+)
 
 if not exist %EPICS_BASE%\ (
 	echo Building EPICS Base %version%
 	cd %epics%
 	mkdir base
-	
+
 	powershell -command "iwr -outf base-%version%.tar.gz %epics_url%"
-	
-	tar -xzvf base-%version%.tar.gz -C base --strip-components=1
-	
+
+	tar -xzvf base-%version%.tar.gz -C base --strip-components=1 >nul 2>&1
+
 	cd base
 	make
 ) else (
 	echo EPICS Base is already installed.
 )
+
+call :build_module seq
+call :build_module autosave
+REM call :build_module ether_ip
+call :build_module sscan
+call :build_module calc
+call :build_module ipac
+call :build_module asyn
+call :build_module scaler
+call :build_module stream-device
+call :build_module modbus
+call :build_module busy
+call :build_module std
 
 cd %USERPROFILE%
 call :clear_env
@@ -87,12 +111,22 @@ EXIT /B 0
 
 :build_module
 
-if not exist %epics%\support\%~1\ (
+if not exist %support%\%~1\ (
 	echo Building %~1 module ...
-	xcopy /i /Y /E %nfs%\%~1%~2 %support%\%~1 >nul 2>&1
+	cd %support%
+	if %~1 == seq (
+		powershell -command "iwr -outf seq.tar.gz https://github.com/mdavidsaver/sequencer-mirror/archive/refs/tags/R2-2-9.tar.gz"
+		mkdir seq
+		tar -xzvf seq.tar.gz -C seq --strip-components=1
+	) else if %~1 == stream-device (
+		git clone "https://github.com/paulscherrerinstitute/StreamDevice" stream-device
+	) else (
+		git clone "https://github.com/epics-modules/%~1"
+	)
+	
 	cd %support%\%~1
 	xcopy /Y %release_files%\%~1.RELEASE configure\RELEASE >nul 2>&1
-	if %~1 == ADCore echo HDF5_STATIC_BUILD=NO >> configure\CONFIG_SITE
+	if %~1 == ADCore echo HDF5_STATIC_BUILD=NO>> configure\CONFIG_SITE
 	make
 ) else (
 	echo %~1 is already installed.

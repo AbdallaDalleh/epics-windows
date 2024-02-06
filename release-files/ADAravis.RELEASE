@@ -1,0 +1,16 @@
+#RELEASE Location of external products
+# Run "gnumake clean uninstall install" in the application
+# top directory each time this file is changed.
+
+# -include $(TOP)/../configure/RELEASE_LIBS_INCLUDE
+# -include $(TOP)/RELEASE.local
+# -include $(TOP)/configure/RELEASE.local
+
+ASYN = C:\epics\support\asyn
+ADCORE = C:\epics\support\areaDetector/core
+ADGENICAM = C:\epics\support\areaDetector/genicam
+EPICS_BASE = C:\epics\base
+
+ARAVIS_INCLUDE += /usr/include/aravis-0.8
+GLIB_INCLUDE += /usr/include/glib-2.0
+GLIB_INCLUDE += /usr/lib64/glib-2.0/include

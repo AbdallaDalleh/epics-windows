@@ -1,0 +1,35 @@
+#RELEASE Location of external products
+# Run "gnumake clean uninstall install" in the application
+# top directory each time this file is changed.
+
+# -include $(TOP)/../configure/RELEASE_LIBS_INCLUDE
+# -include $(TOP)/RELEASE.local
+# -include $(TOP)/configure/RELEASE.local
+
+ASYN = C:\epics\support\asyn
+ADSUPPORT = C:\epics\support\ADSupport
+EPICS_BASE = C:\epics\base
+
+WITH_BITSHUFFLE=YES
+WITH_BLOSC=YES
+WITH_GRAPHICSMAGICK=YES
+WITH_HDF5=YES
+WITH_JPEG=YES
+WITH_NETCDF=YES
+WITH_NEXUS=YES
+WITH_SZIP=YES
+WITH_TIFF=YES
+WITH_ZLIB=YES
+
+BITSHUFFLE_EXTERNAL=NO
+BLOSC_EXTERNAL=NO
+GRAPHICSMAGICK_EXTERNAL=NO
+HDF5_EXTERNAL=NO
+JPEG_EXTERNAL=NO
+NETCDF_EXTERNAL=NO
+NEXUS_EXTERNAL=NO
+SZIP_EXTERNAL=NO
+TIFF_EXTERNAL=NO
+XML2_EXTERNAL=NO
+ZLIB_EXTERNAL=NO
+
