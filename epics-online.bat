@@ -76,28 +76,30 @@ if not exist %EPICS_BASE%\ (
 	echo EPICS Base is already installed.
 )
 
-call :build_module seq
-call :build_module autosave
-call :build_module sscan
-call :build_module calc
-call :build_module ipac
-call :build_module asyn
-call :build_module scaler
-call :build_module stream-device
-call :build_module modbus
-call :build_module busy
-call :build_module std
-call :build_module mca
+call :build_module seq           || goto :clear_env
+call :build_module autosave      || goto :clear_env
+call :build_module sscan         || goto :clear_env
+call :build_module calc          || goto :clear_env
+call :build_module ipac          || goto :clear_env
+call :build_module asyn          || goto :clear_env
+call :build_module scaler        || goto :clear_env
+call :build_module stream-device || goto :clear_env
+call :build_module modbus        || goto :clear_env
+call :build_module busy          || goto :clear_env
+call :build_module std           || goto :clear_env
+call :build_module mca           || goto :clear_env
 
-call :build_module ADSupport
-call :build_module ADCore
+call :build_module ADSupport     || goto :clear_env
+call :build_module ADCore        || goto :clear_env
+
+goto :cleanup
+
+:cleanup
+
+set ERROR=%errorlevel%
 
 cd %USERPROFILE%
-call :clear_env
-exit /B 0
-
-:clear_env
-
+set PATH=
 set PATH=%_path%
 set nfs=
 set epics_host=
@@ -110,7 +112,11 @@ set support=
 set ad_base=
 set _path=
 
-EXIT /B 0
+if %ERROR% neq 0 (
+	echo Build failed
+)
+
+EXIT /B %ERROR%
 
 :build_module
 
@@ -129,13 +135,16 @@ if not exist %support%\%module%\ (
 	) else (
 		git clone "https://github.com/epics-modules/%~1"
 	)
-	
+
 	cd %support%\%module%
-	xcopy /Y %release_files%\%module%.RELEASE configure\RELEASE >nul 2>&1
-	if %module% == ADCore echo HDF5_STATIC_BUILD=NO>> configure\CONFIG_SITE
-	make
-	set module=
+	echo F | xcopy /Y %release_files%\%module%.RELEASE configure\RELEASE >nul 2>&1
+	if %module% == ADCore echo HDF5_STATIC_BUILD=NO>> configure\CONFIG_SITE >nul 2>&1
+	make >nul 2>&1
+
+	if %ERRORLEVEL% equ 0 (
+		echo Module %module% built successfully.
+	)
 ) else (
 	echo %module% is already installed.
 )
-EXIT /B 0
+EXIT /B %ERRORLEVEL%
