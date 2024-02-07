@@ -78,7 +78,6 @@ if not exist %EPICS_BASE%\ (
 
 call :build_module seq
 call :build_module autosave
-REM call :build_module ether_ip
 call :build_module sscan
 call :build_module calc
 call :build_module ipac
@@ -88,6 +87,10 @@ call :build_module stream-device
 call :build_module modbus
 call :build_module busy
 call :build_module std
+call :build_module mca
+
+call :build_module ADSupport
+call :build_module ADCore
 
 cd %USERPROFILE%
 call :clear_env
@@ -111,24 +114,28 @@ EXIT /B 0
 
 :build_module
 
-if not exist %support%\%~1\ (
-	echo Building %~1 module ...
+set module=%~1
+if not exist %support%\%module%\ (
+	echo Building %module% module ...
 	cd %support%
-	if %~1 == seq (
+	if %module% == seq (
 		powershell -command "iwr -outf seq.tar.gz https://github.com/mdavidsaver/sequencer-mirror/archive/refs/tags/R2-2-9.tar.gz"
 		mkdir seq
-		tar -xzvf seq.tar.gz -C seq --strip-components=1
-	) else if %~1 == stream-device (
+		tar -xzvf seq.tar.gz -C seq --strip-components=1 >nul 2>&1
+	) else if %module% == stream-device (
 		git clone "https://github.com/paulscherrerinstitute/StreamDevice" stream-device
+	) else if %module:~0,2% == AD (
+		git clone "https://github.com/areaDetector/%~1"
 	) else (
 		git clone "https://github.com/epics-modules/%~1"
 	)
 	
-	cd %support%\%~1
-	xcopy /Y %release_files%\%~1.RELEASE configure\RELEASE >nul 2>&1
-	if %~1 == ADCore echo HDF5_STATIC_BUILD=NO>> configure\CONFIG_SITE
+	cd %support%\%module%
+	xcopy /Y %release_files%\%module%.RELEASE configure\RELEASE >nul 2>&1
+	if %module% == ADCore echo HDF5_STATIC_BUILD=NO>> configure\CONFIG_SITE
 	make
+	set module=
 ) else (
-	echo %~1 is already installed.
+	echo %module% is already installed.
 )
 EXIT /B 0
