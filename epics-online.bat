@@ -13,52 +13,17 @@ set epics_url=https://epics.anl.gov/download/base/base-%version%.tar.gz
 set EPICS_BASE=%epics%\base
 set EPICS_HOST_ARCH=%epics_host%
 
-if not exist %epics%\     mkdir %epics%;
-if not exist %support%\   mkdir %support%;
-
-git --version >nul 2>&1 && (
-	for /f "delims=" %%a in ('where git') do echo found git @ %%a
-) || (
-	echo Git is not installed. Exiting.
-	exit /B %ERRORLEVEL%
-)
-
-if exist "%perl_home%\perl\bin\perl.exe" (
-	echo found perl @ %perl_home%\perl\bin\perl.exe.
-) else (
-	echo Strawberry Perl not found.
-	exit /B %ERRORLEVEL%
-)
-
-if exist "C:\make\make.exe" (
-	echo found make @ C:\make\make.exe
-) else (
-	echo Installing make ...
-	if not exist "C:\make" mkdir C:\make
-
-	xcopy /i /Y /E %bin_files%\make.exe C:\make >nul 2>&1
-)
-
-if exist "C:\make\re2c.exe" (
-	echo found re2c @ C:\make\re2c.exe
-) else (
-	echo Installing re2c ...
-	if not exist "C:\make" mkdir C:\make
-
-	xcopy /i /Y /E %bin_files%\re2c.exe C:\make >nul 2>&1
-)
-
-set _path=%PATH%
+set "_path="
+set "_path=%PATH%"
 set "PATH=%PATH%;C:\make"
 set "PATH=%PATH%;%perl_home%\c\bin"
 set "PATH=%PATH%;%perl_home%\perl\site\bin"
 set "PATH=%PATH%;%perl_home%\perl\bin"
 
-if exist "%visual_studio_home%\vcvarsall.bat" (
-	call "%visual_studio_home%\vcvarsall.bat" x64
-) else (
-	echo "Visual studio is not be installed. Exiting."
-	exit /B 1
+call %~dp0\sanity-check.bat
+if %ERRORLEVEL% neq 0 (
+	echo Dependecies check faild.
+	exit /B %ERRORLEVEL%
 )
 
 if not exist %EPICS_BASE%\ (
@@ -76,21 +41,20 @@ if not exist %EPICS_BASE%\ (
 	echo EPICS Base is already installed.
 )
 
-call :build_module seq           || goto :clear_env
-call :build_module autosave      || goto :clear_env
-call :build_module sscan         || goto :clear_env
-call :build_module calc          || goto :clear_env
-call :build_module ipac          || goto :clear_env
-call :build_module asyn          || goto :clear_env
-call :build_module scaler        || goto :clear_env
-call :build_module stream-device || goto :clear_env
-call :build_module modbus        || goto :clear_env
-call :build_module busy          || goto :clear_env
-call :build_module std           || goto :clear_env
-call :build_module mca           || goto :clear_env
-
-call :build_module ADSupport     || goto :clear_env
-call :build_module ADCore        || goto :clear_env
+call :build_module seq           || goto :cleanup
+call :build_module autosave      || goto :cleanup
+call :build_module sscan         || goto :cleanup
+call :build_module calc          || goto :cleanup
+call :build_module ipac          || goto :cleanup
+call :build_module asyn          || goto :cleanup
+call :build_module scaler        || goto :cleanup
+call :build_module stream-device || goto :cleanup
+call :build_module modbus        || goto :cleanup
+call :build_module busy          || goto :cleanup
+call :build_module std           || goto :cleanup
+call :build_module mca           || goto :cleanup
+call :build_module ADSupport     || goto :cleanup
+call :build_module ADCore        || goto :cleanup
 
 goto :cleanup
 
