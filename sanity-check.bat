@@ -5,10 +5,10 @@ if not exist %support%\   mkdir %support%;
 
 if exist "%visual_studio_home%\vcvarsall.bat" (
 	echo Configuring Visual Studio ...
-	call "%visual_studio_home%\vcvarsall.bat" x64 >nul 2>&1
-	echo ERROR %ERRORLEVEL%
-	if "%ERRORLEVEL%" neq "0" (
-		exit /B %ERRORLEVEL%
+	call "%visual_studio_home%\vcvarsall.bat" x64
+	set "ERROR=%ERRORLEVEL%"
+	if not "%ERROR%"=="0" (
+		exit /B %ERROR%
 	) else (
 		echo Environment initialized for x64
 	)

@@ -25,9 +25,12 @@ set "PATH=%PATH%;%perl_home%\perl\site\bin"
 set "PATH=%PATH%;%perl_home%\perl\bin"
 
 call %~dp0\sanity-check.bat
-if %ERRORLEVEL% neq 0 (
+set "ERROR=%ERRORLEVEL%"
+if "%ERROR%"=="0" (
+	echo Environment OK!
+) else (
 	echo Dependecies check faild.
-	exit /B %ERRORLEVEL%
+	goto :cleanup
 )
 
 if not exist %EPICS_BASE%\ (
