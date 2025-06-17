@@ -49,20 +49,20 @@ if not exist %EPICS_BASE%\ (
 	echo EPICS Base is already installed.
 )
 
-call :build_module seq           || goto :cleanup
-call :build_module autosave      || goto :cleanup
-call :build_module sscan         || goto :cleanup
-call :build_module calc          || goto :cleanup
-call :build_module ipac          || goto :cleanup
-call :build_module asyn          || goto :cleanup
-call :build_module scaler        || goto :cleanup
-call :build_module stream-device || goto :cleanup
-:: call :build_module modbus        || goto :cleanup
-call :build_module busy          || goto :cleanup
-call :build_module std           || goto :cleanup
-call :build_module mca           || goto :cleanup
-call :build_module ADSupport     || goto :cleanup
-call :build_module ADCore        || goto :cleanup
+call :build_module seq           https://github.com/mdavidsaver/sequencer-mirror || goto :cleanup
+call :build_module autosave      https://github.com/epics-modules/autosave       || goto :cleanup
+call :build_module sscan         https://github.com/epics-modules/sscan          || goto :cleanup
+call :build_module calc          https://github.com/epics-modules/calc           || goto :cleanup
+call :build_module ipac          https://github.com/epics-modules/ipac           || goto :cleanup
+call :build_module asyn          https://github.com/epics-modules/asyn           || goto :cleanup
+call :build_module scaler        https://github.com/epics-modules/scaler         || goto :cleanup
+call :build_module busy          https://github.com/epics-modules/busy           || goto :cleanup
+call :build_module std           https://github.com/epics-modules/std            || goto :cleanup
+call :build_module mca           https://github.com/epics-modules/mca            || goto :cleanup
+call :build_module ADSupport     https://github.com/areaDetector/ADSupport       || goto :cleanup
+call :build_module ADCore        https://github.com/areaDetector/ADCore          || goto :cleanup
+call :build_module stream-device https://github.com/paulscherrerinstitute/StreamDevice || goto :cleanup
+
 
 goto :cleanup
 
@@ -93,22 +93,11 @@ EXIT /B %ERROR%
 :build_module
 
 set module=%~1
+set url=%~2
 if not exist %support%\%module%\ (
 	echo Building %module% module ...
-	cd %support%
-	C:
-	if %module% == seq (
-		powershell -command "iwr -outf seq.tar.gz https://github.com/mdavidsaver/sequencer-mirror/archive/refs/tags/R2-2-9.tar.gz"
-		mkdir seq
-		tar -xzvf seq.tar.gz -C seq --strip-components=1 >nul 2>&1
-	) else if %module% == stream-device (
-		git clone "https://github.com/paulscherrerinstitute/StreamDevice" stream-device
-	) else if %module:~0,2% == AD (
-		git clone "https://github.com/areaDetector/%~1"
-	) else (
-		git clone "https://github.com/epics-modules/%~1"
-	)
-
+	cd /d %support%
+	git clone "%url%" "%module%"
 	cd %module%
 	echo F | xcopy /Y %release_files%\%module%.RELEASE %support%\%module%\configure\RELEASE
 	if %module% == ADCore echo HDF5_STATIC_BUILD=NO>> configure\CONFIG_SITE
