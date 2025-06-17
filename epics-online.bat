@@ -49,7 +49,7 @@ if not exist %EPICS_BASE%\ (
 	echo EPICS Base is already installed.
 )
 
-call :build_module seq           https://github.com/mdavidsaver/sequencer-mirror || goto :cleanup
+call :build_module seq           https://github.com/epics-modules/sequencer      || goto :cleanup
 call :build_module autosave      https://github.com/epics-modules/autosave       || goto :cleanup
 call :build_module sscan         https://github.com/epics-modules/sscan          || goto :cleanup
 call :build_module calc          https://github.com/epics-modules/calc           || goto :cleanup

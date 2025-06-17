@@ -5,6 +5,7 @@ if not exist %support%\   mkdir %support%;
 
 if exist "%visual_studio_home%\vcvarsall.bat" (
 	echo Configuring Visual Studio ...
+	call "%visual_studio_home%\vcvarsall.bat" /clean_env
 	call "%visual_studio_home%\vcvarsall.bat" x64
 	set "ERROR=%ERRORLEVEL%"
 	if not "%ERROR%"=="0" (
