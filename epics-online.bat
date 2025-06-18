@@ -44,7 +44,7 @@ if not exist %EPICS_BASE%\ (
 	tar -xzvf base-%version%.tar.gz -C base --strip-components=1 >nul 2>&1
 
 	cd base
-	make
+	gmake
 ) else (
 	echo EPICS Base is already installed.
 )
@@ -88,6 +88,7 @@ if %ERROR% neq 0 (
 	echo Build failed
 )
 
+cd "%~dp0"
 EXIT /B %ERROR%
 
 :build_module
@@ -99,11 +100,12 @@ if not exist %support%\%module%\ (
 	cd /d %support%
 	git clone "%url%" "%module%"
 	cd %module%
-	echo F | xcopy /Y %release_files%\%module%.RELEASE %support%\%module%\configure\RELEASE
+	echo F | xcopy /Y %release_files%\%module%.RELEASE %support%\%module%\configure\RELEASE.local
 	if %module% == ADCore echo HDF5_STATIC_BUILD=NO>> configure\CONFIG_SITE
-	make
+	gmake
 ) else (
 	echo %module% is already installed.
+	exit /B 0
 )
 if %ERRORLEVEL% equ 0 (
 	echo Module %module% built successfully.

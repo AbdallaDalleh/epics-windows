@@ -25,7 +25,7 @@ DEVIOCSTATS=$(SUPPORT)/iocstats
 
 # EPICS_BASE usually appears last so other apps can override stuff:
 EPICS_BASE=C:\epics\base
--include $(TOP)/../configure/EPICS_BASE.$(EPICS_HOST_ARCH)
+# -include $(TOP)/../configure/EPICS_BASE.$(EPICS_HOST_ARCH)
 
 #Capfast users may need the following definitions
 #CAPFAST_TEMPLATES=

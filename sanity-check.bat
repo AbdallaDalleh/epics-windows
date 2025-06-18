@@ -26,22 +26,17 @@ git --version >nul 2>&1 && (
 )
 
 if exist "%perl_home%\perl\bin\perl.exe" (
-	echo found perl @ %perl_home%\perl\bin\perl.exe.
+	echo found perl @ %perl_home%\perl\bin\perl.exe
 ) else (
 	echo Strawberry Perl not found.
 	exit /B %ERRORLEVEL%
 )
 
-if exist "C:\make\make.exe" (
-	echo found make @ C:\make\make.exe
+if exist "%perl_home%\c\bin\gmake.exe" (
+	echo found gmake @ "%perl_home%\c\bin\gmake.exe"
 ) else (
-	echo Installing make ...
-	if not exist "C:\make" mkdir C:\make
-
-	xcopy /i /Y /E %bin_files%\make.exe C:\make >nul 2>&1
-	if %ERRORLEVEL% neq 0 (
-		exit /B %ERRORLEVEL%
-	)
+	echo gmake not found.
+	exit /B %ERRORLEVEL%
 )
 
 if exist "C:\make\re2c.exe" (

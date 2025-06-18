@@ -6,9 +6,9 @@
 EPICS_BASE=C:\epics\base
 
 # legacy support for synapps
--include $(TOP)/../configure/EPICS_BASE.$(EPICS_HOST_ARCH)
+# -include $(TOP)/../configure/EPICS_BASE.$(EPICS_HOST_ARCH)
 
 # this is how it is done nowadays
--include $(TOP)/../RELEASE.local
--include $(TOP)/../RELEASE.$(EPICS_HOST_ARCH).local
--include $(TOP)/configure/RELEASE.local
+# -include $(TOP)/../RELEASE.local
+# -include $(TOP)/../RELEASE.$(EPICS_HOST_ARCH).local
+# -include $(TOP)/configure/RELEASE.local
